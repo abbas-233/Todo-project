@@ -14,7 +14,10 @@
     "todo",
     "javascript",
     "odin-project",
-    "webpack"
+    "webpack",
+    "webpack-cli",
+    "webpack-dev-server",
+    "html-webpack-plugin",
     "gh-pages"
   ],
   "author": "Your Name",
