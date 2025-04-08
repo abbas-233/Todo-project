@@ -1,0 +1,29 @@
+{
+  "name": "todo-project",
+  "version": "1.0.0",
+  "description": "todo list project is javascript project",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack serve --open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abbas-233/Todo-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abbas-233/Todo-project/issues"
+  },
+  "homepage": "https://github.com/abbas-233/Todo-project#readme",
+  "devDependencies": {
+    "webpack": "^5.99.3",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0"
+  }
+}
