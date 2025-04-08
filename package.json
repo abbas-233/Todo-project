@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/abbas-233/Todo-project#readme",
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "webpack": "^5.99.3",
     "webpack-cli": "^6.0.1"
   },
