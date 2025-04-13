@@ -1,5 +1,5 @@
-import { TodoList } from './TodoList.js';
-import { Todo } from './models/Todo.js';
+import { TodoList } from '@/models/TodoList.js';
+import { Todo } from '@/models/Todo.js';
 
 const STORAGE_KEY = 'todoAppData';
 

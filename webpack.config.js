@@ -6,18 +6,29 @@ module.exports = {
   // Entry point: where Webpack starts bundling
   // Uses the index.js file from the src directory
   entry: {
-    main: './src/index.js'
+    main: path.resolve(__dirname, 'src/index.js')
   },
 
   // Output configuration: where the bundled file goes
   output: {
-    // The bundled file will be named 'main.js'
-    filename: 'main.js',
+    // The bundled file will be named '[name].[contenthash].js'
+    filename: '[name].[contenthash].js',
     // The output directory will be 'dist'
     path: path.resolve(__dirname, 'dist'),
     // Clean the output directory before each build
     clean: true,
-    chunkFilename: 'chunk.js'
+    // Asset module filename configuration
+    assetModuleFilename: 'assets/[hash][ext][query]',
+    publicPath: '/'
+  },
+
+  // Resolve configuration: for handling relative paths
+  resolve: {
+    extensions: ['.js', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    },
+    modules: [path.resolve(__dirname, 'src'), 'node_modules']
   },
 
   // Development server configuration
@@ -65,20 +76,6 @@ module.exports = {
             }
           }
         ]
-      },
-      // HTML loader
-      {
-        test: /\.html$/i,
-        loader: 'html-loader',
-        options: {
-          sources: {
-            list: [
-              { tag: 'img', attribute: 'src', type: 'src' },
-              { tag: 'img', attribute: 'srcset', type: 'srcset' },
-              { tag: 'link', attribute: 'href', type: 'href' }
-            ]
-          }
-        }
       },
       // Images and fonts loader
       {
@@ -129,9 +126,12 @@ module.exports = {
     // Helps with debugging by making module IDs more readable
     moduleIds: 'deterministic',
     // Separates runtime code into a separate chunk (good practice)
-    runtimeChunk: 'single',
+    runtimeChunk: {
+      name: entrypoint => `runtime-${entrypoint.name}`
+    },
     // Splits vendor code (from node_modules) into a separate chunk
     splitChunks: {
+      chunks: 'all',
       cacheGroups: {
         vendor: {
           test: /[\\/]node_modules[\\/]/,

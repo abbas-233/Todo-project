@@ -1,10 +1,10 @@
 // Main application entry point
 
 // --- Imports ---
-import { TodoList } from '../models/TodoList.js';
-import { Todo } from '../models/Todo.js';
-import { saveData, loadData } from '../storage.js';
-import * as ui from '../UI/UI.js';
+import { TodoList } from '@/models/TodoList.js';
+import { Todo } from '@/models/Todo.js';
+import { saveData, loadData } from '@/storage.js';
+import * as ui from '@/UI/UI.js';
 
 // --- State ---
 let todoList = new TodoList();
@@ -99,7 +99,7 @@ function handleDeleteTodo(projectId, todoId) {
  */
 function handleAddProject() {
     const name = prompt('Enter project name:');
-    if (name && name.trim()) {
+    if (name !== null && name.trim()) {
         try {
             todoList.createProject(name.trim());
             saveData(todoList);
@@ -107,6 +107,8 @@ function handleAddProject() {
         } catch (error) {
             alert(error.message);
         }
+    } else {
+        alert('Please enter a valid project name');
     }
 }
 

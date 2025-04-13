@@ -1,15 +1,16 @@
 module.exports = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
+  testPathIgnorePatterns: ['/node_modules/'],
+  moduleDirectories: ['node_modules', 'src'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/src/$1'
   },
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
-  collectCoverageFrom: [
-    'src/**/*.js',
-    '!src/setupTests.js',
-    '!src/index.js'
-  ],
-  coverageReporters: ['text', 'lcov'],
-  coverageDirectory: 'coverage'
+  transform: {
+    '^.+\\.js$': ['babel-jest', { presets: ['@babel/preset-env'] }]
+  },
+  transformIgnorePatterns: ['<rootDir>/node_modules/'],
+  testMatch: ['**/__tests__/**/*.js'],
+  moduleFileExtensions: ['js', 'json', 'node'],
+  extensionsToTreatAsEsm: ['.js']
 };

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <div id="navigation"></div>
+
+    <!-- Settings Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">Settings</h1>
+
+        <!-- Appearance -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Appearance</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Dark Mode
+                    </label>
+                    <button id="dark-mode-toggle" class="w-full flex items-center justify-between px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                        <span class="text-gray-700 dark:text-gray-300">Toggle Dark Mode</span>
+                        <span class="lucide">&#xe9b1;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Notifications</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="urgent-notifications" class="mr-2">
+                        <span class="text-gray-700 dark:text-gray-300">Notify for urgent tasks</span>
+                    </label>
+                </div>
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="due-date-notifications" class="mr-2">
+                        <span class="text-gray-700 dark:text-gray-300">Notify for upcoming due dates</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Default Settings -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Default Task Settings</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Default Priority
+                    </label>
+                    <select id="default-priority" class="w-full p-2 border rounded-md">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Default Category
+                    </label>
+                    <select id="default-category" class="w-full p-2 border rounded-md">
+                        <option value="general">General</option>
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import/Export -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Import/Export</h2>
+            <div class="flex justify-between">
+                <button id="export-button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                    Export Data
+                </button>
+                <label class="cursor-pointer">
+                    <input type="file" id="import-button" class="hidden">
+                    <span class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md">
+                        Import Data
+                    </span>
+                </label>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <!-- Scripts -->
+    <script src="../components/Navigation.js"></script>
+    <script src="../components/Footer.js"></script>
+    <script src="../UI/Navigation.js"></script>
+    <script src="../UI/Footer.js"></script>
+    <script src="../settings.js"></script>
+    <script>
+        // Initialize components
+        document.getElementById('navigation').innerHTML = Navigation();
+        document.getElementById('footer').innerHTML = Footer();
+    </script>
+</body>
+</html>

@@ -6,23 +6,24 @@ const localStorageMock = {
   setItem: jest.fn(),
   removeItem: jest.fn(),
   clear: jest.fn(),
-  data: {},
-  
-  getItem: function(key) {
-    return this.data[key] || null;
-  },
-  
-  setItem: function(key, value) {
-    this.data[key] = String(value);
-  },
-  
-  removeItem: function(key) {
-    delete this.data[key];
-  },
-  
-  clear: function() {
-    this.data = {};
-  }
+  data: {}
+};
+
+// Define the mock methods
+localStorageMock.getItem = function(key) {
+  return this.data[key] || null;
+};
+
+localStorageMock.setItem = function(key, value) {
+  this.data[key] = String(value);
+};
+
+localStorageMock.removeItem = function(key) {
+  delete this.data[key];
+};
+
+localStorageMock.clear = function() {
+  this.data = {};
 };
 
 global.localStorage = localStorageMock;
@@ -32,8 +33,8 @@ global.matchMedia = (query) => ({
   matches: false,
   media: query,
   onchange: null,
-  addListener: jest.fn(), // deprecated
-  removeListener: jest.fn(), // deprecated
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
   dispatchEvent: jest.fn()
@@ -103,6 +104,12 @@ beforeEach(() => {
   localStorageMock.data = {};
   jest.clearAllMocks();
   document.body.innerHTML = '';
+  
+  // Reset localStorage mocks
+  localStorageMock.setItem.mockClear();
+  localStorageMock.getItem.mockClear();
+  localStorageMock.removeItem.mockClear();
+  localStorageMock.clear.mockClear();
 });
 
 // Reset system time after all tests
