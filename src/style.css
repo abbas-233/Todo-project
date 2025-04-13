@@ -1,3 +1,440 @@
+/* Add all new styles for the new features */
+
+/* Project List Styles */
+.project-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.project-item:hover {
+    background: var(--bg-hover);
+}
+
+.project-item.active {
+    background: var(--primary-color);
+    color: var(--text-on-primary);
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.project-category {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.project-category.general { background: var(--category-general); }
+.project-category.work { background: var(--category-work); }
+.project-category.personal { background: var(--category-personal); }
+.project-category.shopping { background: var(--category-shopping); }
+.project-category.travel { background: var(--category-travel); }
+
+.project-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Todo Item Styles */
+.todo-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.todo-item.completed {
+    opacity: 0.6;
+    background: var(--bg-completed);
+}
+
+.todo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.todo-checkbox {
+    margin-right: 1rem;
+}
+
+.todo-content {
+    flex: 1;
+}
+
+.todo-meta {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.priority-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.priority-badge.low { background: var(--priority-low); }
+.priority-badge.medium { background: var(--priority-medium); }
+.priority-badge.high { background: var(--priority-high); }
+
+.recurring-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: var(--recurring-color);
+    font-size: 0.8rem;
+}
+
+.dependencies-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: var(--dependencies-color);
+    font-size: 0.8rem;
+}
+
+.overdue-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: var(--overdue-color);
+    font-size: 0.8rem;
+}
+
+.due-today-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: var(--due-today-color);
+    font-size: 0.8rem;
+}
+
+.todo-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.todo-actions button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: color 0.2s ease;
+}
+
+.todo-actions button:hover {
+    color: var(--text-primary);
+}
+
+.todo-notes {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background: var(--bg-notes);
+    border-radius: 4px;
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+.todo-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.tag-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: var(--tag-bg);
+    color: var(--text-on-tag);
+    font-size: 0.75rem;
+}
+
+/* Analytics Dashboard */
+.analytics-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.analytics-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.metric {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-metric);
+    border-radius: 4px;
+}
+
+.metric-label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.metric-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Eisenhower Matrix */
+.eisenhower-matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.matrix-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.matrix-cell {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.matrix-cell h4 {
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+}
+
+.matrix-cell ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.matrix-cell li {
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.matrix-cell li:hover {
+    background: var(--bg-hover);
+}
+
+.urgent-important {
+    background: var(--urgent-important-bg);
+}
+
+.urgent-not-important {
+    background: var(--urgent-not-important-bg);
+}
+
+.not-urgent-important {
+    background: var(--not-urgent-important-bg);
+}
+
+.not-urgent-not-important {
+    background: var(--not-urgent-not-important-bg);
+}
+
+/* Quick Add Button */
+.quick-add-button {
+    background: var(--primary-color);
+    color: var(--text-on-primary);
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.quick-add-button:hover {
+    background: var(--primary-hover);
+}
+
+/* Templates */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.template-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.template-card.new-template {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.template-card button {
+    background: var(--primary-color);
+    color: var(--text-on-primary);
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.template-card button:hover {
+    background: var(--primary-hover);
+}
+
+/* Timer Button */
+.timer-button {
+    background: var(--timer-bg);
+    color: var(--text-on-timer);
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.timer-button:hover {
+    background: var(--timer-hover);
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-progress);
+    border-radius: 4px;
+    margin: 1rem 0;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background: var(--progress-color);
+    transition: width 0.3s ease;
+}
+
+/* Dark Mode Variables */
+:root {
+    /* Base Colors */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-hover: #e9ecef;
+    --text-primary: #212529;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    
+    /* Special Colors */
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --text-on-primary: #ffffff;
+    
+    /* Category Colors */
+    --category-general: #e9ecef;
+    --category-work: #ffc107;
+    --category-personal: #6610f2;
+    --category-shopping: #28a745;
+    --category-travel: #17a2b8;
+    
+    /* Priority Colors */
+    --priority-low: #dc3545;
+    --priority-medium: #ffc107;
+    --priority-high: #28a745;
+    
+    /* Status Colors */
+    --recurring-color: #6c757d;
+    --dependencies-color: #17a2b8;
+    --overdue-color: #dc3545;
+    --due-today-color: #ffc107;
+    
+    /* Analytics Colors */
+    --bg-metric: #f8f9fa;
+    
+    /* Matrix Colors */
+    --urgent-important-bg: #f8d7da;
+    --urgent-not-important-bg: #fff3cd;
+    --not-urgent-important-bg: #d4edda;
+    --not-urgent-not-important-bg: #e2e3e5;
+    
+    /* Timer Colors */
+    --timer-bg: #4dabf7;
+    --timer-hover: #4dabf7;
+    --text-on-timer: #ffffff;
+    
+    /* Progress Colors */
+    --bg-progress: #dee2e6;
+    --progress-color: #0d6efd;
+    
+    /* Notes Colors */
+    --bg-notes: #f8f9fa;
+    
+    /* Tag Colors */
+    --tag-bg: #e9ecef;
+    --text-on-tag: #212529;
+    
+    /* Completed Task */
+    --bg-completed: #d4edda;
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-hover: #3d3d3d;
+    --text-primary: #ffffff;
+    --text-muted: #888888;
+    --border-color: #444444;
+    
+    --bg-metric: #333333;
+    --bg-progress: #444444;
+    --bg-notes: #2d2d2d;
+    
+    --tag-bg: #3d3d3d;
+    --text-on-tag: #ffffff;
+    
+    --bg-completed: #2d402d;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -10,10 +447,20 @@ body {
     color: #333;
 }
 
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+}
+
+body.dark-mode .container {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
 }
 
 header {
@@ -37,6 +484,10 @@ main {
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .project-list {
+    background-color: #202020;
 }
 
 .projects h2 {
@@ -72,6 +523,15 @@ button:hover {
     background: #2980b9;
 }
 
+body.dark-mode .controls button {
+    background-color: #444;
+    color: #ffffff;
+}
+
+body.dark-mode .controls button:hover {
+    background-color: #555;
+}
+
 .project-item {
     padding: 1rem;
     border: 1px solid #ddd;
@@ -103,6 +563,10 @@ button:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+body.dark-mode .todo-list {
+    background-color: #202020;
+}
+
 .todo-section h2 {
     margin-bottom: 1rem;
     color: #2c3e50;
@@ -116,10 +580,24 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    position: relative;
+}
+
+body.dark-mode .todo-item {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
 }
 
 .todo-item.completed {
     opacity: 0.7;
+}
+
+body.dark-mode .todo-item.completed {
+    background-color: #2d2d2d;
+}
+
+body.dark-mode .todo-item.completed .todo-title {
+    color: #666;
 }
 
 .todo-header {
@@ -173,6 +651,278 @@ button:hover {
     background: #c0392b;
 }
 
+.controls {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+body.dark-mode .controls {
+    background-color: #202020;
+}
+
+.controls select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+body.dark-mode .controls select {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid #444;
+}
+
+.controls input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+body.dark-mode .progress-bar {
+    background-color: #2d2d2d;
+}
+
+.progress-bar .progress {
+    height: 100%;
+    background-color: #4CAF50;
+    transition: width 0.3s ease;
+}
+
+.dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.dark-mode-toggle label {
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    background-color: #ccc;
+    border-radius: 34px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dark-mode-toggle input {
+    display: none;
+}
+
+.dark-mode-toggle .slider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 26px;
+    height: 26px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.dark-mode-toggle input:checked + .slider {
+    transform: translateX(26px);
+}
+
+.dark-mode-toggle input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+.dark-mode-toggle input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+.dark-mode-toggle input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.dark-mode-toggle input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+.dark-mode-toggle input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* New Feature Styles */
+
+/* Category Select */
+.category-select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+body.dark-mode .category-select {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid #444;
+}
+
+/* Tags Input */
+.tags-input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    min-width: 150px;
+}
+
+body.dark-mode .tags-input {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid #444;
+}
+
+/* Recurring Task Styles */
+.recurring-badge {
+    background-color: #ff9800;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 8px;
+}
+
+body.dark-mode .recurring-badge {
+    background-color: #ff9800;
+}
+
+/* Dependencies Badge */
+.dependencies-badge {
+    background-color: #9c27b0;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 8px;
+}
+
+body.dark-mode .dependencies-badge {
+    background-color: #9c27b0;
+}
+
+/* Notification Styles */
+.notification-badge {
+    background-color: #e91e63;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 8px;
+}
+
+body.dark-mode .notification-badge {
+    background-color: #e91e63;
+}
+
+/* Export/Import Buttons */
+.export-import-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.export-button, .import-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.export-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.import-button {
+    background-color: #2196F3;
+    color: white;
+}
+
+.export-button:hover, .import-button:hover {
+    opacity: 0.9;
+}
+
+body.dark-mode .export-button,
+body.dark-mode .import-button {
+    color: white;
+}
+
+/* Due Date Status */
+.todo-item .due-status {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    color: white;
+}
+
+.todo-item .due-today {
+    background-color: #4CAF50;
+}
+
+.todo-item .overdue {
+    background-color: #f44336;
+}
+
+body.dark-mode .todo-item .due-status {
+    color: white;
+}
+
+/* Category Colors */
+.category-general { background-color: #9e9e9e; }
+.category-work { background-color: #2196F3; }
+.category-personal { background-color: #4CAF50; }
+.category-shopping { background-color: #FF9800; }
+.category-travel { background-color: #9C27B0; }
+
+body.dark-mode .category-general,
+body.dark-mode .category-work,
+body.dark-mode .category-personal,
+body.dark-mode .category-shopping,
+body.dark-mode .category-travel {
+    color: white;
+}
+
+/* Tags Display */
+.tags-container {
+    margin-top: 4px;
+}
+
+.tag-badge {
+    background-color: #e0e0e0;
+    color: #666;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-right: 4px;
+}
+
+body.dark-mode .tag-badge {
+    background-color: #444;
+    color: #ffffff;
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
     main {
         grid-template-columns: 1fr;
@@ -180,5 +930,248 @@ button:hover {
 
     .container {
         padding: 1rem;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .controls select,
+    .controls input {
+        width: 100%;
+    }
+}
+
+/* Timer Button */
+.timer-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #2196F3;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.timer-button:hover {
+    background-color: #1976D2;
+}
+
+body.dark-mode .timer-button {
+    background-color: #1976D2;
+}
+
+/* Subtasks Styles */
+.subtasks-container {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+body.dark-mode .subtasks-container {
+    background-color: #2d2d2d;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.subtask-item:hover {
+    background-color: #e0e0e0;
+}
+
+body.dark-mode .subtask-item:hover {
+    background-color: #3d3d3d;
+}
+
+.subtask-checkbox {
+    margin-right: 8px;
+}
+
+.subtask-title {
+    flex: 1;
+}
+
+.add-subtask {
+    padding: 8px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-subtask:hover {
+    background-color: #45a049;
+}
+
+body.dark-mode .add-subtask {
+    background-color: #45a049;
+}
+
+/* Analytics Dashboard */
+.analytics-dashboard {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .analytics-dashboard {
+    background-color: #2d2d2d;
+}
+
+.analytics-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+body.dark-mode .analytics-card {
+    background-color: #3d3d3d;
+}
+
+.analytics-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border-radius: 6px;
+}
+
+body.dark-mode .metric {
+    background-color: #333;
+}
+
+.metric-label {
+    font-size: 0.9em;
+    color: #666;
+}
+
+body.dark-mode .metric-label {
+    color: #999;
+}
+
+.metric-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2196F3;
+}
+
+body.dark-mode .metric-value {
+    color: #4CAF50;
+}
+
+/* Template Styles */
+.template-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #9C27B0;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.template-button:hover {
+    background-color: #881e9e;
+}
+
+body.dark-mode .template-button {
+    background-color: #881e9e;
+}
+
+/* Eisenhower Matrix Styles */
+.eisenhower-matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.matrix-cell {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+body.dark-mode .matrix-cell {
+    background-color: #2d2d2d;
+}
+
+.urgent-important {
+    background-color: #f44336;
+}
+
+.urgent-not-important {
+    background-color: #4CAF50;
+}
+
+.not-urgent-important {
+    background-color: #2196F3;
+}
+
+.not-urgent-not-important {
+    background-color: #9e9e9e;
+}
+
+body.dark-mode .urgent-important,
+body.dark-mode .urgent-not-important,
+body.dark-mode .not-urgent-important,
+body.dark-mode .not-urgent-not-important {
+    color: white;
+}
+
+/* Quick Add Shortcuts */
+.quick-add-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.quick-add-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.quick-add-button:hover {
+    transform: scale(1.05);
+}
+
+body.dark-mode .quick-add-button {
+    background-color: #45a049;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .analytics-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-add-container {
+        bottom: 10px;
+        right: 10px;
     }
 }
