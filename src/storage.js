@@ -1,142 +1,166 @@
-import { Project } from './project.js';
-import { Todo } from './todo.js';
+import { TodoList } from './TodoList.js';
+import { Todo } from './models/Todo.js';
 
-const STORAGE_KEY = 'todoAppData'; // Key used to store data in localStorage
+const STORAGE_KEY = 'todoAppData';
 
 /**
- * Saves the provided application state to localStorage.
- * @param {object} projects - The projects object.
- * @param {string} currentProjectId - The ID of the currently active project.
+ * Saves the TodoList instance to localStorage.
+ * @param {TodoList} todoList - The TodoList instance to save.
  */
-export function saveData(projects, currentProjectId) {
-    const dataToSave = {
-        projects,
-        currentProjectId,
-        templates: Array.from(templates.values()), // Save templates
-        analyticsData // Save analytics data
-    };
+export function saveData(todoList) {
     try {
+        const dataToSave = {
+            todoList: todoList.exportData(),
+            darkMode: localStorage.getItem('isDarkMode'),
+            templates: Array.from(todoList.templates.values()).map(template => template.exportData())
+        };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-        console.log("Data saved via storage module:", dataToSave);
+        console.log("Data saved successfully:", dataToSave);
     } catch (error) {
         console.error("Error saving data to localStorage:", error);
+        throw error;
     }
 }
 
 /**
- * Loads the application state from localStorage.
- * Re-hydrates the plain objects back into class instances.
- * @returns {{projects: object, currentProjectId: string, templates: Map, analyticsData: object}} The loaded application state.
+ * Loads the TodoList instance from localStorage.
+ * @returns {TodoList} The loaded TodoList instance.
  */
 export function loadData() {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    let projects = {};
-    let currentProjectId = 'default';
-    let templates = new Map();
-    let analyticsData = {
-        totalTasks: 0,
-        completedTasks: 0,
-        averageTimeSpent: 0,
-        urgentTasks: 0,
-        importantTasks: 0
-    };
-
-    if (savedData) {
-        try {
-            const parsedData = JSON.parse(savedData);
-            console.log("Data loaded via storage module:", parsedData);
-
-            // Re-hydrate projects and todos
-            if (parsedData.projects) {
-                Object.values(parsedData.projects).forEach(projData => {
-                    const project = new Project(projData.name);
-                    project.id = projData.id;
-                    project.category = projData.category;
-                    project.todos = projData.todos.map(todoData => {
-                        const todo = new Todo(
-                            todoData.title,
-                            todoData.description,
-                            todoData.dueDate,
-                            todoData.priority,
-                            todoData.notes,
-                            todoData.completed,
-                            todoData.category,
-                            todoData.isRecurring,
-                            todoData.recurrence,
-                            todoData.tags,
-                            todoData.dependencies,
-                            todoData.subtasks,
-                            todoData.timeSpent,
-                            todoData.templateId
-                        );
-                        todo.id = todoData.id;
-                        todo.createdDate = new Date(todoData.createdDate);
-                        todo.lastModified = new Date(todoData.lastModified);
-                        return todo;
-                    });
-                    projects[project.id] = project;
-                });
-            }
-
-            // Re-hydrate templates
-            if (parsedData.templates) {
-                parsedData.templates.forEach(templateData => {
-                    const template = new Todo(
-                        templateData.title,
-                        templateData.description,
-                        templateData.dueDate,
-                        templateData.priority,
-                        templateData.notes,
-                        false,
-                        templateData.category,
-                        templateData.isRecurring,
-                        templateData.recurrence,
-                        templateData.tags,
-                        templateData.dependencies,
-                        templateData.subtasks,
-                        0,
-                        'template'
-                    );
-                    template.id = templateData.id;
-                    templates.set(template.id, template);
-                });
-            }
-
-            // Load analytics data
-            if (parsedData.analyticsData) {
-                analyticsData = parsedData.analyticsData;
-            }
-
-            // Validate and set current project ID
-            currentProjectId = (parsedData.currentProjectId && projects[parsedData.currentProjectId])
-                               ? parsedData.currentProjectId
-                               : 'default';
-
-        } catch (error) {
-            console.error("Error parsing saved data:", error);
-            initializeDefaultProject(projects);
-            currentProjectId = 'default';
+    try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (!savedData) {
+            console.log("No saved data found, returning new TodoList");
+            return new TodoList();
         }
-    } else {
-        console.log("No saved data found, initializing default project.");
-        initializeDefaultProject(projects);
-        currentProjectId = 'default';
-    }
 
-    return { projects, currentProjectId, templates, analyticsData };
+        const data = JSON.parse(savedData);
+        
+        // Rehydrate TodoList from saved data
+        const todoList = new TodoList(data.todoList);
+        
+        // Load templates
+        if (data.templates) {
+            data.templates.forEach(templateData => {
+                const template = new Todo(templateData);
+                template.type = 'template';
+                todoList.templates.set(template.id, template);
+            });
+        }
+
+        return todoList;
+    } catch (error) {
+        console.error("Error loading data from localStorage:", error);
+        return new TodoList(); // Return new instance if error
+    }
 }
 
 /**
- * Initializes the default project if it doesn't exist.
- * Modifies the passed projects object directly.
- * @param {object} projectsObj - The projects object to potentially modify.
+ * Saves dark mode preference.
+ * @param {boolean} isDarkMode - Whether dark mode is enabled.
  */
-function initializeDefaultProject(projectsObj) {
-    if (!projectsObj['default']) {
-        const defaultProject = new Project('Default');
-        defaultProject.id = 'default';
-        defaultProject.category = 'general';
-        projectsObj['default'] = defaultProject;
-        console.log("Initialized default project in storage module.");
+export function saveDarkModePreference(isDarkMode) {
+    try {
+        localStorage.setItem('isDarkMode', isDarkMode);
+        console.log("Dark mode preference saved:", isDarkMode);
+    } catch (error) {
+        console.error("Error saving dark mode preference:", error);
     }
+}
+
+/**
+ * Gets the saved dark mode preference.
+ * @returns {boolean} Whether dark mode is enabled.
+ */
+export function getDarkModePreference() {
+    return localStorage.getItem('isDarkMode') === 'true';
+}
+
+/**
+ * Saves user preferences.
+ * @param {object} preferences - User preferences object.
+ */
+export function savePreferences(preferences) {
+    try {
+        localStorage.setItem('todoPreferences', JSON.stringify(preferences));
+        console.log("Preferences saved:", preferences);
+    } catch (error) {
+        console.error("Error saving preferences:", error);
+    }
+}
+
+/**
+ * Loads user preferences.
+ * @returns {object} User preferences object.
+ */
+export function loadPreferences() {
+    try {
+        const preferences = JSON.parse(localStorage.getItem('todoPreferences') || '{}');
+        return {
+            sort: preferences.sort || 'priority',
+            filter: preferences.filter || 'all',
+            view: preferences.view || 'list',
+            notifications: preferences.notifications || true,
+            autoSave: preferences.autoSave || true,
+            lastProject: preferences.lastProject || 'default'
+        };
+    } catch (error) {
+        console.error("Error loading preferences:", error);
+        return {
+            sort: 'priority',
+            filter: 'all',
+            view: 'list',
+            notifications: true,
+            autoSave: true,
+            lastProject: 'default'
+        };
+    }
+}
+
+/**
+ * Clears all application data from localStorage.
+ */
+export function clearData() {
+    try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem('todoPreferences');
+        localStorage.removeItem('todoTemplates');
+        localStorage.removeItem('isDarkMode');
+        console.log("All application data cleared from localStorage");
+    } catch (error) {
+        console.error("Error clearing data:", error);
+    }
+}
+
+/**
+ * Migrates old data format to new format.
+ * @param {object} oldData - The old data format.
+ * @returns {object} The migrated data.
+ */
+export function migrateOldData(oldData) {
+    if (!oldData || !oldData.projects) return null;
+    
+    const migratedData = {
+        todoList: {
+            projects: Object.values(oldData.projects).map(project => ({
+                id: project.id,
+                name: project.name,
+                todos: project.todos.map(todo => ({
+                    ...todo,
+                    type: 'task'
+                }))
+            })),
+            currentProjectId: oldData.currentProjectId || 'default',
+            templates: Array.from(oldData.templates || []).map(template => ({
+                ...template,
+                type: 'template'
+            })),
+            settings: {
+                sort: oldData.currentSort || 'priority',
+                filter: oldData.currentFilter || 'all'
+            }
+        }
+    };
+    
+    return migratedData;
 }
