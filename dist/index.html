@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+      @font-face {
+        font-family: 'LucideIcons';
+        src: url(https://cdn.jsdelivr.net/npm/lucide-static@latest/font/Lucide.ttf) format('truetype');
+      }
+      .lucide {
+        font-family: 'LucideIcons';
+        font-size: 1.25rem; /* Adjust size as needed */
+        line-height: 1;
+      }
+      /* Basic styles for modal */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 10; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+        max-width: 500px;
+        border-radius: 0.5rem;
+      }
+      .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      .close-button:hover,
+      .close-button:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4 md:p-8 flex flex-col md:flex-row gap-8">
+
+        <aside class="w-full md:w-1/4 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Projects</h2>
+            <ul id="project-list" class="space-y-2 mb-4">
+                <li class="p-2 rounded-md cursor-pointer bg-blue-100 text-blue-800 font-semibold" data-project-id="default">Default</li>
+                </ul>
+            <form id="add-project-form" class="flex">
+                <input type="text" id="new-project-name" placeholder="New Project Name" class="flex-grow p-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <button type="submit" class="bg-blue-500 text-white p-2 rounded-r-md hover:bg-blue-600 flex items-center justify-center">
+                    <span class="lucide">&#xe03e;</span> </button>
+            </form>
+        </aside>
+
+        <main class="w-full md:w-3/4 bg-white p-6 rounded-lg shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h1 id="current-project-title" class="text-3xl font-bold text-gray-800">Default</h1>
+                <button id="delete-project-button" class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 text-sm flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <span class="lucide">&#xe4cf;</span> Delete Project </button>
+            </div>
+
+            <div id="todo-list" class="space-y-4 mb-6">
+                <p class="text-gray-500 italic">No tasks yet. Add one below!</p>
+            </div>
+
+            <button id="add-todo-button" class="w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600 flex items-center justify-center gap-2">
+                <span class="lucide">&#xe03e;</span> Add New Task </button>
+        </main>
+
+    </div>
+
+    <div id="todo-modal" class="modal">
+        <div class="modal-content bg-white p-6 rounded-lg shadow-xl">
+            <span id="close-modal-button" class="close-button lucide">&#xea13;</span> <h3 id="modal-title" class="text-2xl font-bold mb-4 text-gray-800">Add New Task</h3>
+            <form id="todo-form">
+                <input type="hidden" id="todo-id"> <div class="mb-4">
+                    <label for="todo-title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <input type="text" id="todo-title" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="todo-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="todo-description" rows="3" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="todo-due-date" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                    <input type="date" id="todo-due-date" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="todo-priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                    <select id="todo-priority" class="w-full p-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                 <div class="mb-4">
+                    <label for="todo-notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea id="todo-notes" rows="2" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="flex justify-end gap-3">
+                     <button type="button" id="cancel-todo-button" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400">Cancel</button>
+                    <button type="submit" id="save-todo-button" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
+

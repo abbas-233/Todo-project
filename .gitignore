@@ -1,29 +1,19 @@
-# Dependencies
+# Ignore Node dependencies folder
 node_modules/
 
-# Build output
-dist/
-
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# IDE specific files
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Logs
-logs
-*.log
-
-# OS generated files
+# Ignore operating system files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+
+# Ignore log files and temporary files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+*.tmp
+
+# Note: We are NOT ignoring the dist/ folder because
+# for the simple GitHub Pages deployment method,
+# we will commit the contents of dist/ directly.
+# If using GitHub Actions for building, you would ignore dist/.
+
