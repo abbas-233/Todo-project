@@ -1,74 +1,126 @@
 import BasePage from '../components/BasePage.js';
+import Navigation from '../components/Navigation.js';
+import Footer from '../components/Footer.js';
 
 export default class AnalyticsPage extends BasePage {
     constructor() {
         super();
         this.render();
         this.addEventListeners();
+        this.initializeDarkMode();
     }
 
     render() {
         // Main title
-        const title = this.createElement('h1', 'text-3xl font-bold text-gray-800 mb-8');
+        const title = document.createElement('h1');
+        title.className = 'text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8';
         title.textContent = 'Todo Analytics';
-        this.appendToMain(title);
+        this.main.appendChild(title);
 
-        // Stats Grid
-        const statsGrid = this.createGrid(1, 'gap-6 mb-8');
-        
         // Stats Cards
-        const completionCard = this.createCard('Task Completion', this.createStatsContent([
+        const statsGrid = document.createElement('div');
+        statsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8';
+
+        // Task Completion Card
+        const completionCard = this.createStatsCard('Task Completion', [
             { label: 'Total Tasks', id: 'total-tasks' },
             { label: 'Completed', id: 'completed-tasks' },
             { type: 'progress', id: 'completion-progress' }
-        ]));
+        ]);
 
-        const timeCard = this.createCard('Time Management', this.createStatsContent([
+        // Time Management Card
+        const timeCard = this.createStatsCard('Time Management', [
             { label: 'Total Time', id: 'total-time' },
             { label: 'Average Time', id: 'avg-time' }
-        ]));
+        ]);
 
-        const productivityCard = this.createCard('Productivity', this.createStatsContent([
+        // Productivity Card
+        const productivityCard = this.createStatsCard('Productivity', [
             { label: 'Daily Tasks', id: 'daily-tasks' },
             { label: 'Success Rate', id: 'success-rate' }
-        ]));
+        ]);
 
         statsGrid.appendChild(completionCard);
         statsGrid.appendChild(timeCard);
         statsGrid.appendChild(productivityCard);
-        this.appendToMain(statsGrid);
+        this.main.appendChild(statsGrid);
 
-        // Charts Grid
-        const chartsGrid = this.createGrid(1, 'gap-6');
-        
-        // Chart Cards
-        const completionTimeline = this.createCard('Task Completion Timeline', this.createChartContent('completion-timeline'));
-        const categoryDistribution = this.createCard('Category Distribution', this.createChartContent('category-distribution'));
+        // Charts
+        const chartsGrid = document.createElement('div');
+        chartsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+
+        const completionTimeline = this.createChartCard('Task Completion Timeline', 'completion-timeline');
+        const categoryDistribution = this.createChartCard('Category Distribution', 'category-distribution');
 
         chartsGrid.appendChild(completionTimeline);
         chartsGrid.appendChild(categoryDistribution);
-        this.appendToMain(chartsGrid);
+        this.main.appendChild(chartsGrid);
     }
 
-    createStatsContent(items) {
-        const content = this.createElement('div', 'space-y-4');
+    createStatsCard(title, items) {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md';
+
+        const heading = document.createElement('h2');
+        heading.className = 'text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200';
+        heading.textContent = title;
+        card.appendChild(heading);
+
+        const content = document.createElement('div');
+        content.className = 'space-y-4';
+
         items.forEach(item => {
             if (item.type === 'progress') {
-                content.appendChild(this.createProgress(item.id));
+                const progressContainer = document.createElement('div');
+                progressContainer.className = 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5';
+                
+                const progress = document.createElement('div');
+                progress.id = item.id;
+                progress.className = 'bg-blue-600 h-2.5 rounded-full';
+                progress.style.width = '0%';
+                
+                progressContainer.appendChild(progress);
+                content.appendChild(progressContainer);
             } else {
-                content.appendChild(this.createStatItem(item.label, item.id));
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'flex justify-between';
+                
+                const label = document.createElement('span');
+                label.className = 'text-gray-600 dark:text-gray-400';
+                label.textContent = item.label;
+                
+                const value = document.createElement('span');
+                value.id = item.id;
+                value.className = 'font-semibold';
+                value.textContent = '0';
+                
+                itemDiv.appendChild(label);
+                itemDiv.appendChild(value);
+                content.appendChild(itemDiv);
             }
         });
-        return content;
+
+        card.appendChild(content);
+        return card;
     }
 
-    createChartContent(canvasId) {
-        const canvas = this.createElement('canvas');
+    createChartCard(title, canvasId) {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md';
+
+        const heading = document.createElement('h2');
+        heading.className = 'text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200';
+        heading.textContent = title;
+        card.appendChild(heading);
+
+        const canvas = document.createElement('canvas');
         canvas.id = canvasId;
-        return canvas;
+        card.appendChild(canvas);
+
+        return card;
     }
 
     addEventListeners() {
-        // Add analytics-specific event listeners here
+        // Add any analytics-specific event listeners here
     }
 }
