@@ -1,18 +1,16 @@
 // Main application entry point
 
 // --- Imports ---
-import { TodoList } from './mainfol/TodoList.js';
-import * as ui from './mainfol/UI.js';
+import { TodoList } from './assets/TodoList.js';
+import * as ui from './assets/UI.js';
+import TodoPage from './assets/TodoPage.js';
 
 // --- State ---
 let todoList = new TodoList();
 let currentProjectId = null;
 
-// --- DOM Elements ---
-const addProjectButton = document.getElementById('add-project-button');
-const addTodoButton = document.getElementById('add-todo-button');
-const todoForm = document.getElementById('todo-form');
-const closeModalButton = document.getElementById('close-modal-button');
+// Initialize TodoPage
+const todoPage = new TodoPage();
 
 // --- Event Handlers ---
 
@@ -92,10 +90,10 @@ function renderApp() {
 // --- Initial Setup ---
 function initializeApp() {
     // Attach event listeners
-    addProjectButton.addEventListener('click', handleAddProject);
-    addTodoButton.addEventListener('click', () => ui.openModal());
-    todoForm.addEventListener('submit', handleTodoFormSubmit);
-    closeModalButton.addEventListener('click', ui.closeModal);
+    document.getElementById('add-project-button').addEventListener('click', handleAddProject);
+    document.getElementById('add-todo-button').addEventListener('click', () => ui.openModal());
+    document.getElementById('todo-form').addEventListener('submit', handleTodoFormSubmit);
+    document.getElementById('close-modal-button').addEventListener('click', ui.closeModal);
 
     // Render initial state
     renderApp();
