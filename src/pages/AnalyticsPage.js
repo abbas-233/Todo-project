@@ -1,13 +1,36 @@
-import BasePage from '../components/BasePage.js';
-import Navigation from '../components/Navigation.js';
-import Footer from '../components/Footer.js';
-
-export default class AnalyticsPage extends BasePage {
+export default class AnalyticsPage {
     constructor() {
-        super();
+        this.initializeComponents();
         this.render();
         this.addEventListeners();
         this.initializeDarkMode();
+    }
+
+    initializeComponents() {
+        // Create navigation
+        const navigation = document.createElement('div');
+        navigation.id = 'navigation';
+        navigation.innerHTML = `
+            <nav>
+                <!-- Navigation content here -->
+            </nav>
+        `;
+        document.body.appendChild(navigation);
+
+        // Create footer
+        const footer = document.createElement('div');
+        footer.id = 'footer';
+        footer.innerHTML = `
+            <footer>
+                <!-- Footer content here -->
+            </footer>
+        `;
+        document.body.appendChild(footer);
+
+        // Create main content container
+        this.main = document.createElement('main');
+        this.main.className = 'max-w-7xl mx-auto px-4 py-8';
+        document.body.appendChild(this.main);
     }
 
     render() {
@@ -122,5 +145,21 @@ export default class AnalyticsPage extends BasePage {
 
     addEventListeners() {
         // Add any analytics-specific event listeners here
+    }
+
+    initializeDarkMode() {
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                localStorage.setItem('isDarkMode', document.body.classList.contains('dark'));
+            });
+        }
+
+        // Apply saved dark mode preference
+        const isDark = localStorage.getItem('isDarkMode') === 'true';
+        if (isDark) {
+            document.body.classList.add('dark');
+        }
     }
 }

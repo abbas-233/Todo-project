@@ -4,18 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/Lucide.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <script type="module">
-        import TodoPage from './pages/TodoPage.js';
-        import AnalyticsPage from './pages/AnalyticsPage.js';
-        import SettingsPage from './pages/SettingsPage.js';
-
-        // Initialize the Todo page by default
-        new TodoPage();
-    </script>
+    <div id="app">
+        <header>
+            <h1>Todo App</h1>
+        </header>
+        <main>
+            <section id="project-section">
+                <h2>Projects</h2>
+                <div id="project-list"></div>
+                <button id="add-project-button">Add Project</button>
+            </section>
+            <section id="todo-section">
+                <h2>Todos</h2>
+                <div id="todo-list"></div>
+                <button id="add-todo-button">Add Todo</button>
+            </section>
+        </main>
+        <div id="todo-modal" class="hidden">
+            <div class="modal-content">
+                <span id="close-modal-button">&times;</span>
+                <h2 id="modal-title">Add New Task</h2>
+                <form id="todo-form">
+                    <input type="text" id="todo-title" placeholder="Todo Title" required>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./index.js"></script>
 </body>
 </html>
