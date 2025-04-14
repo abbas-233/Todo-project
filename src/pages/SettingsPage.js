@@ -1,25 +1,22 @@
 import BasePage from '../components/BasePage.js';
-import Navigation from '../components/Navigation.js';
-import Footer from '../components/Footer.js';
+import UI from '../UI/UI.js';
 
 export default class SettingsPage extends BasePage {
     constructor() {
         super();
         this.render();
         this.addEventListeners();
-        this.initializeDarkMode();
     }
 
     render() {
         // Main title
-        const title = document.createElement('h1');
-        title.className = 'text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8';
+        const title = this.createElement('h1', 'text-3xl font-bold text-gray-800 mb-8');
         title.textContent = 'Settings';
-        this.main.appendChild(title);
+        this.appendToMain(title);
 
         // Appearance Settings
         this.createSettingsSection('Appearance', [
-            this.createDarkModeToggle()
+            this.createThemeSelect()
         ]);
 
         // Notifications Settings
@@ -50,54 +47,53 @@ export default class SettingsPage extends BasePage {
     }
 
     createSettingsSection(title, items) {
-        const section = document.createElement('div');
-        section.className = 'bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-6';
-
-        const heading = document.createElement('h2');
-        heading.className = 'text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200';
+        const section = this.createElement('div', 'bg-white p-6 rounded-lg shadow-md mb-6');
+        
+        const heading = this.createElement('h2', 'text-xl font-semibold mb-4 text-gray-800');
         heading.textContent = title;
         section.appendChild(heading);
 
-        const content = document.createElement('div');
-        content.className = 'space-y-4';
+        const content = this.createElement('div', 'space-y-4');
         items.forEach(item => content.appendChild(item));
         section.appendChild(content);
 
-        this.main.appendChild(section);
+        this.appendToMain(section);
     }
 
-    createDarkModeToggle() {
-        const container = document.createElement('div');
-        container.className = 'space-y-2';
+    createThemeSelect() {
+        const container = this.createElement('div', 'space-y-2');
 
-        const label = document.createElement('label');
-        label.className = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1';
-        label.textContent = 'Dark Mode';
+        const label = this.createElement('label', 'block text-sm font-medium text-gray-700 mb-1');
+        label.textContent = 'Theme';
 
-        const button = document.createElement('button');
-        button.id = 'dark-mode-toggle';
-        button.className = 'w-full flex items-center justify-between px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700';
-        button.innerHTML = `
-            <span class="text-gray-700 dark:text-gray-300">Toggle Dark Mode</span>
-            <span class="lucide">&#xe9b1;</span>
-        `;
+        const select = this.createElement('select', 'w-full p-2 border rounded-md');
+        select.id = 'theme-select';
+        
+        const options = [
+            { value: 'light', text: 'Light' }
+        ];
+
+        options.forEach(option => {
+            const opt = this.createElement('option');
+            opt.value = option.value;
+            opt.textContent = option.text;
+            select.appendChild(opt);
+        });
 
         container.appendChild(label);
-        container.appendChild(button);
+        container.appendChild(select);
         return container;
     }
 
     createCheckbox(id, label) {
-        const container = document.createElement('div');
-        container.className = 'flex items-center';
+        const container = this.createElement('div', 'flex items-center');
 
-        const input = document.createElement('input');
+        const input = this.createElement('input');
         input.type = 'checkbox';
         input.id = id;
         input.className = 'mr-2';
 
-        const labelElement = document.createElement('span');
-        labelElement.className = 'text-gray-700 dark:text-gray-300';
+        const labelElement = this.createElement('span', 'text-gray-700');
         labelElement.textContent = label;
 
         container.appendChild(input);
@@ -106,19 +102,16 @@ export default class SettingsPage extends BasePage {
     }
 
     createSelect(id, label, options) {
-        const container = document.createElement('div');
-        container.className = 'space-y-2';
+        const container = this.createElement('div', 'space-y-2');
 
-        const labelElement = document.createElement('label');
-        labelElement.className = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1';
+        const labelElement = this.createElement('label', 'block text-sm font-medium text-gray-700 mb-1');
         labelElement.textContent = label;
 
-        const select = document.createElement('select');
+        const select = this.createElement('select', 'w-full p-2 border rounded-md');
         select.id = id;
-        select.className = 'w-full p-2 border rounded-md';
 
         options.forEach(option => {
-            const opt = document.createElement('option');
+            const opt = this.createElement('option');
             opt.value = option.value;
             opt.textContent = option.text;
             select.appendChild(opt);
@@ -130,24 +123,21 @@ export default class SettingsPage extends BasePage {
     }
 
     createExportButton() {
-        const button = document.createElement('button');
+        const button = this.createElement('button', 'w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md');
         button.id = 'export-button';
-        button.className = 'w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md';
         button.textContent = 'Export Data';
         return button;
     }
 
     createImportButton() {
-        const container = document.createElement('label');
-        container.className = 'cursor-pointer w-full';
+        const container = this.createElement('label', 'cursor-pointer w-full');
 
-        const input = document.createElement('input');
+        const input = this.createElement('input');
         input.type = 'file';
         input.id = 'import-button';
         input.className = 'hidden';
 
-        const button = document.createElement('span');
-        button.className = 'w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md';
+        const button = this.createElement('span', 'w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md');
         button.textContent = 'Import Data';
 
         container.appendChild(input);
@@ -156,29 +146,39 @@ export default class SettingsPage extends BasePage {
     }
 
     addEventListeners() {
-        // Dark mode toggle
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark');
-                localStorage.setItem('isDarkMode', document.body.classList.contains('dark'));
-            });
-        }
-
         // Export button
-        const exportButton = document.getElementById('export-button');
-        if (exportButton) {
-            exportButton.addEventListener('click', () => {
-                // Add export functionality here
-            });
-        }
+        this.addEventListener('export-button', 'click', () => {
+            try {
+                const data = UI.exportData();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'todo-data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                this.showError('Error exporting data: ' + error.message);
+            }
+        });
 
         // Import button
-        const importButton = document.getElementById('import-button');
-        if (importButton) {
-            importButton.addEventListener('change', (e) => {
-                // Add import functionality here
-            });
-        }
+        this.addEventListener('import-button', 'change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        UI.importData(data);
+                    } catch (error) {
+                        this.showError('Error importing data: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
     }
 }

@@ -1,10 +1,15 @@
 // Main application entry point
 
 // --- Imports ---
+import TodoPage from './pages/TodoPage.js';
+import AnalyticsPage from './pages/AnalyticsPage.js';
+import SettingsPage from './pages/SettingsPage.js';
+import UI from './UI/UI.js';
+import Navigation from './components/Navigation.js';
+import Footer from './components/Footer.js';
 import { TodoList } from '@/models/TodoList.js';
 import { Todo } from '@/models/Todo.js';
 import { saveData, loadData } from '@/storage.js';
-import * as ui from '@/UI/UI.js';
 
 // --- State ---
 let todoList = new TodoList();
@@ -13,28 +18,58 @@ let editingTodoId = null;
 let currentSort = 'priority';
 let currentFilter = 'all';
 let searchQuery = '';
-let isDarkMode = false;
 let templates = new Map();
+let currentPage = null;
 
-// --- DOM Elements ---
-const addProjectButton = document.getElementById('add-project-button');
-const deleteProjectButton = document.getElementById('delete-project-button');
-const addTodoButton = document.getElementById('add-todo-button');
-const quickAddButton = document.getElementById('quick-add');
-const todoModal = document.getElementById('todo-modal');
-const closeModalButton = document.getElementById('close-modal-button');
-const cancelTodoButton = document.getElementById('cancel-todo-button');
-const todoForm = document.getElementById('todo-form');
-const sortSelect = document.getElementById('todo-sort');
-const filterSelect = document.getElementById('todo-filter');
-const searchInput = document.getElementById('search-input');
-const darkModeToggle = document.getElementById('dark-mode-toggle');
-const importButton = document.getElementById('import-button');
-const exportButton = document.getElementById('export-button');
-const projectsList = document.getElementById('projects-list');
-const todoListContainer = document.getElementById('todo-list');
+// --- Page Management ---
+function initializePages() {
+    // Initialize pages
+    currentPage = new TodoPage();
+    
+    // Initialize UI
+    UI.initialize();
+    
+    // Initialize navigation
+    Navigation.initialize();
+    
+    // Initialize footer
+    Footer.initialize();
+}
 
-// --- Event Handlers ---
+// --- Navigation ---
+function navigateTo(pageClass) {
+    if (currentPage) {
+        currentPage.remove();
+    }
+    currentPage = new pageClass();
+    currentPage.render();
+    currentPage.addEventListeners();
+}
+
+// --- Event Listeners ---
+function setupEventListeners() {
+    // Navigation event listeners
+    const navigation = document.getElementById('navigation');
+    if (navigation) {
+        navigation.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-page]');
+            if (target) {
+                const page = target.dataset.page;
+                switch (page) {
+                    case 'todo':
+                        navigateTo(TodoPage);
+                        break;
+                    case 'analytics':
+                        navigateTo(AnalyticsPage);
+                        break;
+                    case 'settings':
+                        navigateTo(SettingsPage);
+                        break;
+                }
+            }
+        });
+    }
+}
 
 /**
  * Handles selecting a project from the list.
@@ -43,7 +78,8 @@ const todoListContainer = document.getElementById('todo-list');
 function handleProjectSelect(projectId) {
     currentProjectId = projectId;
     saveData(todoList);
-    renderApp();
+    UI.renderProjects(todoList.getProjects(), currentProjectId, handleProjectSelect);
+    UI.renderTodos(todoList.getProjectById(projectId), handleToggleComplete, handleEditTodo, handleDeleteTodo);
 }
 
 /**
@@ -65,7 +101,7 @@ function handleToggleComplete(projectId, todoId) {
             }
             
             saveData(todoList);
-            renderApp();
+            UI.renderTodos(project, handleToggleComplete, handleEditTodo, handleDeleteTodo);
         }
     }
 }
@@ -76,7 +112,7 @@ function handleToggleComplete(projectId, todoId) {
  */
 function handleEditTodo(todo) {
     editingTodoId = todo.id;
-    ui.openModal(todo);
+    UI.openModal(todo);
 }
 
 /**
@@ -90,7 +126,7 @@ function handleDeleteTodo(projectId, todoId) {
         project.removeTodo(todoId);
         console.log(`Todo ${todoId} deleted from project ${projectId}`);
         saveData(todoList);
-        renderApp();
+        UI.renderTodos(project, handleToggleComplete, handleEditTodo, handleDeleteTodo);
     }
 }
 
@@ -103,12 +139,12 @@ function handleAddProject() {
         try {
             todoList.createProject(name.trim());
             saveData(todoList);
-            renderApp();
+            UI.renderProjects(todoList.getProjects(), currentProjectId, handleProjectSelect);
         } catch (error) {
-            alert(error.message);
+            UI.showError(error.message);
         }
     } else {
-        alert('Please enter a valid project name');
+        UI.showError('Please enter a valid project name');
     }
 }
 
@@ -117,14 +153,10 @@ function handleAddProject() {
  */
 function handleDeleteProject() {
     if (confirm('Are you sure you want to delete this project?')) {
-        try {
-            todoList.deleteProject(currentProjectId);
-            currentProjectId = 'default';
-            saveData(todoList);
-            renderApp();
-        } catch (error) {
-            alert(error.message);
-        }
+        todoList.deleteProject(currentProjectId);
+        currentProjectId = 'default';
+        saveData(todoList);
+        UI.renderProjects(todoList.getProjects(), currentProjectId, handleProjectSelect);
     }
 }
 
@@ -135,17 +167,27 @@ function handleDeleteProject() {
 function handleTodoFormSubmit(event) {
     event.preventDefault();
     
-    const formData = ui.getFormData();
+    const formData = UI.getFormData();
     const project = todoList.getProjectById(currentProjectId);
     
+    if (!project) {
+        UI.showError('No project selected');
+        return;
+    }
+    
     if (editingTodoId) {
-        // Edit existing todo
+        // Update existing todo
         const todo = project.getTodoById(editingTodoId);
-        todo.update(formData);
-        editingTodoId = null;
+        if (todo) {
+            todo.update(formData);
+            editingTodoId = null;
+            UI.closeModal();
+            saveData(todoList);
+            UI.renderTodos(project, handleToggleComplete, handleEditTodo, handleDeleteTodo);
+        }
     } else {
         // Create new todo
-        const todo = new Todo(
+        const newTodo = new Todo(
             formData.title,
             formData.description,
             formData.dueDate,
@@ -157,15 +199,14 @@ function handleTodoFormSubmit(event) {
             formData.isRecurring,
             formData.recurrence,
             formData.subtasks,
-            formData.timeSpent,
-            formData.templateId
+            formData.timeSpent
         );
-        project.addTodo(todo);
+        
+        project.addTodo(newTodo);
+        UI.closeModal();
+        saveData(todoList);
+        UI.renderTodos(project, handleToggleComplete, handleEditTodo, handleDeleteTodo);
     }
-    
-    saveData(todoList);
-    ui.closeModal();
-    renderApp();
 }
 
 /**
@@ -174,7 +215,7 @@ function handleTodoFormSubmit(event) {
  */
 function handleSortChange(sortBy) {
     currentSort = sortBy;
-    renderApp();
+    UI.renderTodos(todoList.getProjectById(currentProjectId), handleToggleComplete, handleEditTodo, handleDeleteTodo);
 }
 
 /**
@@ -183,151 +224,17 @@ function handleSortChange(sortBy) {
  */
 function handleFilterChange(filterBy) {
     currentFilter = filterBy;
-    renderApp();
+    UI.renderTodos(todoList.getProjectById(currentProjectId), handleToggleComplete, handleEditTodo, handleDeleteTodo);
 }
 
 /**
  * Handles searching todos.
  */
 function handleSearch() {
-    searchQuery = searchInput.value.trim().toLowerCase();
-    renderApp();
-}
-
-/**
- * Handles toggling dark mode.
- */
-function handleDarkModeToggle() {
-    isDarkMode = !isDarkMode;
-    document.body.classList.toggle('dark');
-    localStorage.setItem('isDarkMode', isDarkMode);
-    renderApp();
-}
-
-/**
- * Handles importing todos from a file.
- * @param {Event} event - The file input event.
- */
-function handleImport(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                todoList = new TodoList(data);
-                saveData(todoList);
-                renderApp();
-            } catch (error) {
-                console.error('Error importing data:', error);
-                alert('Error importing data. Please ensure the file is in the correct format.');
-            }
-        };
-        reader.readAsText(file);
-    }
-}
-
-/**
- * Handles exporting todos to a file.
- */
-function handleExport() {
-    const data = todoList.exportData();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'todo-data.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-/**
- * Handles starting/stopping timer for a task.
- * @param {Todo} todo - The todo to start/stop timing for.
- */
-function handleTimer(todo) {
-    if (todo.isBeingTimed()) {
-        todo.stopTiming();
-    } else {
-        todo.startTiming();
-    }
-    saveData(todoList);
-    renderApp();
-}
-
-/**
- * Handles adding a subtask.
- * @param {string} todoId - The ID of the parent task.
- */
-function handleAddSubtask(todoId) {
-    const subtaskTitle = prompt('Enter subtask title:');
-    if (subtaskTitle && subtaskTitle.trim()) {
-        const project = todoList.getProjectById(currentProjectId);
-        const todo = project.getTodoById(todoId);
-        todo.addSubtask(subtaskTitle.trim());
-        saveData(todoList);
-        renderApp();
-    }
-}
-
-/**
- * Handles toggling subtask completion.
- * @param {string} todoId - The ID of the parent task.
- * @param {string} subtaskId - The ID of the subtask.
- */
-function handleToggleSubtask(todoId, subtaskId) {
-    const project = todoList.getProjectById(currentProjectId);
-    const todo = project.getTodoById(todoId);
-    todo.toggleSubtask(subtaskId);
-    saveData(todoList);
-    renderApp();
-}
-
-/**
- * Handles creating a new task template.
- */
-function handleCreateTemplate() {
-    const title = prompt('Enter template title:');
-    if (title && title.trim()) {
-        const template = new Todo(
-            title.trim(),
-            '',
-            '',
-            'medium',
-            '',
-            'general',
-            [],
-            [],
-            false,
-            '',
-            [],
-            0,
-            'template'
-        );
-        templates.set(template.id, template);
-        localStorage.setItem('todoTemplates', JSON.stringify(Array.from(templates.values())));
-        renderApp();
-    }
-}
-
-/**
- * Handles applying a template to a new task.
- * @param {string} templateId - The ID of the template to apply.
- */
-function handleApplyTemplate(templateId) {
-    const template = templates.get(templateId);
-    if (template) {
-        const newTodo = template.clone();
-        newTodo.id = null; // Generate new ID
-        newTodo.templateId = templateId;
-        
-        const project = todoList.getProjectById(currentProjectId);
-        project.addTodo(newTodo);
-        
-        saveData(todoList);
-        renderApp();
+    const searchInput = document.getElementById('todo-search');
+    if (searchInput) {
+        searchQuery = searchInput.value;
+        UI.renderTodos(todoList.getProjectById(currentProjectId), handleToggleComplete, handleEditTodo, handleDeleteTodo);
     }
 }
 
@@ -336,13 +243,11 @@ function handleApplyTemplate(templateId) {
  * @param {Todo} todo - The todo to check.
  */
 function checkNotifications(todo) {
-    if (Notification.permission === "granted") {
-        if (todo.isUrgent() && !todo.completed) {
-            showNotification(`Task "${todo.title}" is urgent and needs attention!`);
-        }
-        if (todo.isDueToday() && !todo.completed) {
-            showNotification(`Task "${todo.title}" is due today!`);
-        }
+    if (todo.isUrgent() && !todo.completed) {
+        showNotification(`Task "${todo.title}" is urgent and needs attention!`);
+    }
+    if (todo.isDueToday() && !todo.completed) {
+        showNotification(`Task "${todo.title}" is due today!`);
     }
 }
 
@@ -351,10 +256,12 @@ function checkNotifications(todo) {
  * @param {string} message - The notification message.
  */
 function showNotification(message) {
-    new Notification('Todo Reminder', {
-        body: message,
-        icon: '/images/icon.png'
-    });
+    if (Notification.permission === "granted") {
+        new Notification('Todo Reminder', {
+            body: message,
+            icon: '/images/icon.png'
+        });
+    }
 }
 
 /**
@@ -362,8 +269,8 @@ function showNotification(message) {
  */
 function updateAnalytics() {
     const analytics = todoList.getAnalytics();
-    ui.renderAnalyticsDashboard(analytics);
-    ui.renderEisenhowerMatrix(todoList.getProjects());
+    UI.renderAnalyticsDashboard(analytics);
+    UI.renderEisenhowerMatrix(todoList.getProjects());
 }
 
 /**
@@ -371,10 +278,10 @@ function updateAnalytics() {
  */
 function renderApp() {
     // Render projects
-    ui.renderProjects(todoList.getProjects(), currentProjectId, handleProjectSelect);
+    UI.renderProjects(todoList.getProjects(), currentProjectId, handleProjectSelect);
     
     // Render templates
-    ui.renderTemplates(templates);
+    UI.renderTemplates(templates);
     
     // Render todos with filtering and sorting
     const project = todoList.getProjectById(currentProjectId);
@@ -403,7 +310,7 @@ function renderApp() {
         });
 
         const progress = todoList.getProjectProgress(currentProjectId);
-        ui.renderTodos(project, handleToggleComplete, handleEditTodo, handleDeleteTodo, progress);
+        UI.renderTodos(project, handleToggleComplete, handleEditTodo, handleDeleteTodo, progress);
     }
     
     // Update analytics
@@ -411,22 +318,14 @@ function renderApp() {
 }
 
 // --- Initial Setup ---
-
 function initializeApp() {
     console.log("Initializing application...");
-
     // Load data
     try {
         todoList = new TodoList(loadData());
     } catch (error) {
         console.error("Error loading data:", error);
         todoList = new TodoList();
-    }
-
-    // Load dark mode preference
-    isDarkMode = localStorage.getItem('isDarkMode') === 'true';
-    if (isDarkMode) {
-        document.body.classList.add('dark');
     }
 
     // Load templates
@@ -462,20 +361,8 @@ function initializeApp() {
         Notification.requestPermission();
     }
 
-    // Attach event listeners
-    addProjectButton.addEventListener('click', handleAddProject);
-    deleteProjectButton.addEventListener('click', handleDeleteProject);
-    addTodoButton.addEventListener('click', () => ui.openModal());
-    quickAddButton.addEventListener('click', () => ui.openModal());
-    todoForm.addEventListener('submit', handleTodoFormSubmit);
-    sortSelect.addEventListener('change', (e) => handleSortChange(e.target.value));
-    filterSelect.addEventListener('change', (e) => handleFilterChange(e.target.value));
-    searchInput.addEventListener('input', handleSearch);
-    darkModeToggle.addEventListener('click', handleDarkModeToggle);
-    importButton.addEventListener('change', handleImport);
-    exportButton.addEventListener('click', handleExport);
-    
-    // Render initial state
+    initializePages();
+    setupEventListeners();
     renderApp();
 }
 

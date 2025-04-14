@@ -8,14 +8,6 @@ class TodoList {
         this.categories = Todo.getCategories();
         this.priorities = Todo.getPriorities();
         this.recurrences = Todo.getRecurrences();
-        this.templates = new Map();
-        this.analyticsData = {
-            totalTasks: 0,
-            completedTasks: 0,
-            averageTimeSpent: 0,
-            urgentTasks: 0,
-            importantTasks: 0
-        };
         this.load();
     }
 
@@ -79,13 +71,11 @@ class TodoList {
             todoData.tags,
             todoData.dependencies,
             todoData.subtasks,
-            todoData.timeSpent,
-            todoData.templateId
+            todoData.timeSpent
         );
 
         project.todos.push(todo);
         project.lastModified = new Date();
-        this.updateAnalytics();
         this.save();
         return todo;
     }
@@ -100,7 +90,6 @@ class TodoList {
         Object.assign(todo, updates);
         todo.lastModified = new Date();
         project.lastModified = new Date();
-        this.updateAnalytics();
         this.save();
     }
 
@@ -110,117 +99,7 @@ class TodoList {
 
         project.todos = project.todos.filter(t => t.id !== todoId);
         project.lastModified = new Date();
-        this.updateAnalytics();
         this.save();
-    }
-
-    // Template Management
-    createTemplate(todo) {
-        const template = {
-            ...todo,
-            templateId: Date.now().toString()
-        };
-        this.templates.set(template.templateId, template);
-        this.save();
-        return template;
-    }
-
-    getTemplateById(templateId) {
-        return this.templates.get(templateId);
-    }
-
-    deleteTemplate(templateId) {
-        this.templates.delete(templateId);
-        this.save();
-    }
-
-    // Analytics
-    updateAnalytics() {
-        this.analyticsData = {
-            totalTasks: 0,
-            completedTasks: 0,
-            averageTimeSpent: 0,
-            urgentTasks: 0,
-            importantTasks: 0
-        };
-
-        Object.values(this.projects).forEach(project => {
-            project.todos.forEach(todo => {
-                this.analyticsData.totalTasks++;
-                if (todo.completed) this.analyticsData.completedTasks++;
-                if (todo.isUrgent()) this.analyticsData.urgentTasks++;
-                if (todo.isImportant()) this.analyticsData.importantTasks++;
-                this.analyticsData.averageTimeSpent += todo.timeSpent;
-            });
-        });
-
-        if (this.analyticsData.totalTasks > 0) {
-            this.analyticsData.averageTimeSpent /= this.analyticsData.totalTasks;
-        }
-    }
-
-    // Data Management
-    save() {
-        saveData('todoList', {
-            projects: this.projects,
-            selectedProjectId: this.selectedProject?.id,
-            analyticsData: this.analyticsData,
-            templates: Array.from(this.templates.entries())
-        });
-    }
-
-    load() {
-        const data = loadData('todoList');
-        if (data) {
-            this.projects = data.projects;
-            this.analyticsData = data.analyticsData;
-            
-            // Rebuild templates Map
-            this.templates = new Map(data.templates);
-            
-            // Rebuild Todo instances
-            this.projects = Object.fromEntries(
-                Object.entries(this.projects).map(([id, proj]) => {
-                    proj.todos = proj.todos.map(todo => {
-                        const t = new Todo(
-                            todo.title,
-                            todo.description,
-                            todo.dueDate,
-                            todo.priority,
-                            todo.notes,
-                            todo.completed,
-                            todo.category,
-                            todo.isRecurring,
-                            todo.recurrence,
-                            todo.tags,
-                            todo.dependencies,
-                            todo.subtasks,
-                            todo.timeSpent,
-                            todo.templateId
-                        );
-                        t.id = todo.id;
-                        t.lastModified = todo.lastModified;
-                        t.createdDate = todo.createdDate;
-                        return t;
-                    });
-                    return [id, proj];
-                })
-            );
-            
-            if (data.selectedProjectId) {
-                this.selectedProject = this.getProjectById(data.selectedProjectId);
-            }
-        } else {
-            this.createDefaultProject();
-        }
-    }
-
-    createDefaultProject() {
-        try {
-            this.createProject('Default Project');
-        } catch (error) {
-            console.error('Error creating default project:', error);
-        }
     }
 
     // Project Selection
@@ -255,7 +134,7 @@ class TodoList {
                     case 'urgent':
                         return todo.isUrgent();
                     case 'important':
-                        return todo.isImportant();
+                        return todo.priority === 'high';
                     default:
                         return true;
                 }
@@ -280,6 +159,100 @@ class TodoList {
                         return 0;
                 }
             });
+    }
+
+    // Data Management
+    save() {
+        saveData('todoList', {
+            projects: this.projects,
+            selectedProjectId: this.selectedProject?.id
+        });
+    }
+
+    load() {
+        const data = loadData('todoList');
+        if (data) {
+            this.projects = data.projects;
+            if (data.selectedProjectId) {
+                this.selectedProject = this.getProjectById(data.selectedProjectId);
+            }
+        } else {
+            this.createDefaultProject();
+        }
+    }
+
+    createDefaultProject() {
+        try {
+            this.createProject('Default Project');
+        } catch (error) {
+            console.error('Error creating default project:', error);
+        }
+    }
+
+    // Analytics
+    getAnalytics() {
+        const analytics = {
+            totalTasks: 0,
+            completedTasks: 0,
+            averageTimeSpent: 0,
+            urgentTasks: 0,
+            importantTasks: 0,
+            byCategory: {},
+            byPriority: {},
+            byStatus: {
+                completed: 0,
+                active: 0
+            }
+        };
+
+        Object.values(this.projects).forEach(project => {
+            project.todos.forEach(todo => {
+                analytics.totalTasks++;
+                if (todo.completed) {
+                    analytics.completedTasks++;
+                    analytics.byStatus.completed++;
+                } else {
+                    analytics.byStatus.active++;
+                }
+                
+                analytics.averageTimeSpent += todo.timeSpent;
+                
+                if (todo.isUrgent()) {
+                    analytics.urgentTasks++;
+                }
+                
+                if (todo.priority === 'high') {
+                    analytics.importantTasks++;
+                }
+                
+                // Update category counts
+                if (todo.category) {
+                    analytics.byCategory[todo.category] = 
+                        (analytics.byCategory[todo.category] || 0) + 1;
+                }
+                
+                // Update priority counts
+                analytics.byPriority[todo.priority] =
+                    (analytics.byPriority[todo.priority] || 0) + 1;
+            });
+        });
+
+        // Calculate average time spent
+        if (analytics.totalTasks > 0) {
+            analytics.averageTimeSpent /= analytics.totalTasks;
+        }
+
+        return analytics;
+    }
+
+    // Progress
+    getProjectProgress(projectId) {
+        const project = this.getProjectById(projectId);
+        if (!project) return { completed: 0, total: 0 };
+
+        const completed = project.todos.filter(todo => todo.completed).length;
+        const total = project.todos.length;
+        return { completed, total };
     }
 }
 

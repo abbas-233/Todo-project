@@ -1,6 +1,4 @@
 import BasePage from '../components/BasePage.js';
-import Navigation from '../components/Navigation.js';
-import Footer from '../components/Footer.js';
 import UI from '../UI/UI.js';
 
 export default class TodoPage extends BasePage {
@@ -8,76 +6,36 @@ export default class TodoPage extends BasePage {
         super();
         this.render();
         this.addEventListeners();
-        this.initializeDarkMode();
     }
 
     render() {
-        // Project Header
-        const header = document.createElement('div');
-        header.className = 'flex justify-between items-center mb-6';
+        const container = this.createElement('div', 'space-y-6');
         
-        const title = document.createElement('h1');
-        title.id = 'current-project-title';
-        title.className = 'text-3xl font-bold text-gray-800 dark:text-gray-200';
-        title.textContent = 'Default';
+        // Project selector
+        const projectSelector = this.createElement('div', 'flex justify-between items-center mb-4');
+        const projectSelect = this.createElement('select', 'bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500');
+        projectSelect.id = 'project-select';
+        projectSelect.innerHTML = `
+            <option value="default">Select Project</option>
+        `;
         
-        const buttons = document.createElement('div');
-        buttons.className = 'flex items-center gap-4';
-
-        const addProjectButton = document.createElement('button');
+        // Add project button
+        const addProjectButton = this.createButton('Add Project', 'bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md');
         addProjectButton.id = 'add-project-button';
-        addProjectButton.className = 'bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2';
         addProjectButton.innerHTML = `
-            <span class="lucide">&#xe408;</span> New Project
+            <span class="lucide">&#xe408;</span> Add Project
         `;
+        
+        projectSelector.appendChild(projectSelect);
+        projectSelector.appendChild(addProjectButton);
+        container.appendChild(projectSelector);
 
-        const addTodoButton = document.createElement('button');
-        addTodoButton.id = 'add-todo-button';
-        addTodoButton.className = 'bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md flex items-center gap-2';
-        addTodoButton.innerHTML = `
-            <span class="lucide">&#xe408;</span> Add Task
-        `;
-
-        buttons.appendChild(addProjectButton);
-        buttons.appendChild(addTodoButton);
-        header.appendChild(title);
-        header.appendChild(buttons);
-
-        // Todo List Container
-        const todoList = document.createElement('div');
+        // Todo list container
+        const todoList = this.createElement('div', 'space-y-4');
         todoList.id = 'todo-list';
-        todoList.className = 'space-y-4';
+        container.appendChild(todoList);
 
-        this.main.appendChild(header);
-        this.main.appendChild(todoList);
-
-        // Todo Modal
-        const modal = document.createElement('div');
-        modal.id = 'todo-modal';
-        modal.className = 'modal hidden';
-
-        const modalContent = document.createElement('div');
-        modalContent.className = 'modal-content bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl';
-
-        const closeButton = document.createElement('span');
-        closeButton.id = 'close-modal-button';
-        closeButton.className = 'close-button lucide';
-        closeButton.innerHTML = '&#xea13;';
-
-        const modalTitle = document.createElement('h2');
-        modalTitle.id = 'modal-title';
-        modalTitle.className = 'text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200';
-        modalTitle.textContent = 'Add New Task';
-
-        const todoForm = document.createElement('form');
-        todoForm.id = 'todo-form';
-        todoForm.className = 'space-y-4';
-
-        modalContent.appendChild(closeButton);
-        modalContent.appendChild(modalTitle);
-        modalContent.appendChild(todoForm);
-        modal.appendChild(modalContent);
-        document.body.appendChild(modal);
+        this.appendToMain(container);
     }
 
     addEventListeners() {
@@ -90,26 +48,30 @@ export default class TodoPage extends BasePage {
                     try {
                         UI.createProject(name.trim());
                     } catch (error) {
-                        alert(error.message);
+                        UI.showError(error.message);
                     }
+                } else {
+                    UI.showError('Please enter a valid project name');
                 }
             });
         }
 
-        // Add todo button
-        const addTodoButton = document.getElementById('add-todo-button');
-        if (addTodoButton) {
-            addTodoButton.addEventListener('click', () => {
-                UI.openModal();
+        // Project selector
+        const projectSelect = document.getElementById('project-select');
+        if (projectSelect) {
+            projectSelect.addEventListener('change', (e) => {
+                const projectId = e.target.value;
+                if (projectId && projectId !== 'default') {
+                    UI.selectProject(projectId);
+                }
             });
         }
+    }
 
-        // Close modal button
-        const closeModalButton = document.getElementById('close-modal-button');
-        if (closeModalButton) {
-            closeModalButton.addEventListener('click', () => {
-                document.getElementById('todo-modal').classList.add('hidden');
-            });
+    remove() {
+        const container = document.querySelector('.space-y-6');
+        if (container) {
+            container.remove();
         }
     }
 }

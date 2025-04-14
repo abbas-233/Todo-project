@@ -3,19 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/Lucide.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Todo List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            position: relative;
+            max-width: 500px;
+            width: 90%;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .close-button:hover {
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <script type="module">
-        import TodoPage from './pages/TodoPage.js';
-        import AnalyticsPage from './pages/AnalyticsPage.js';
-        import SettingsPage from './pages/SettingsPage.js';
+    <div id="navigation"></div>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div id="main-content"></div>
+    </main>
+    <div id="footer"></div>
+    
+    <div id="todo-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal-button" class="close-button">×</span>
+            <h2 id="modal-title" class="text-2xl font-bold mb-4 text-gray-800">Add New Task</h2>
+            <form id="todo-form" class="space-y-4">
+                <div class="form-group">
+                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="title" name="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="form-group">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+                <!-- Other form fields will be added dynamically -->
+            </form>
+        </div>
+    </div>
 
-        // Initialize the Todo page by default
-        new TodoPage();
+    <script type="module">
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize UI
+            import('./UI/UI.js').then(UI => {
+                window.ui = new UI.default();
+            });
+
+            // Initialize pages after UI
+            Promise.all([
+                import('./pages/TodoPage.js'),
+                import('./pages/AnalyticsPage.js'),
+                import('./pages/SettingsPage.js')
+            ]).then(([TodoPage, AnalyticsPage, SettingsPage]) => {
+                // Initialize TodoPage by default
+                new TodoPage.default();
+            });
+        });
+
+        // Add modal close handler
+        document.getElementById('close-modal-button').addEventListener('click', () => {
+            document.getElementById('todo-modal').classList.remove('show');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('todo-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                e.currentTarget.classList.remove('show');
+            }
+        });
     </script>
 </body>
 </html>
